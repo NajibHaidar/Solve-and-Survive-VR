@@ -26,7 +26,7 @@ public class EquationMonster : MonoBehaviour
             return;
         }
 
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponentInParent<NavMeshAgent>();
         if (visualRenderer == null)
         {
             visualRenderer = GetComponentInChildren<Renderer>();
