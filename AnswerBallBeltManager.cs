@@ -8,14 +8,23 @@ public class AnswerBallBeltManager : MonoBehaviour
     public int numberOfBalls = 9;
     public float radius = 0.5f;
     public float z_offset = 0.25f; // z offset for the balls
-
     private Transform[] ballSlots;
 
     [Header("Belt Position Settings")]
     public Transform cameraTransform;
 
+    [Header("Rotation Settings")]
+    [SerializeField] private float rotationThresholdAngle = 45f;
+    [SerializeField] private float rotationSmoothSpeed = 3f;
+    private Quaternion targetRotation;
+
     void Start()
     {
+
+        Vector3 flatForward = Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up).normalized;
+        targetRotation = Quaternion.LookRotation(flatForward, Vector3.up);
+        transform.rotation = targetRotation;
+
         ballSlots = new Transform[numberOfBalls];
 
         for (int i = 0; i < numberOfBalls; i++)
@@ -35,17 +44,27 @@ public class AnswerBallBeltManager : MonoBehaviour
 
     void Update()
     {
-        if (cameraTransform != null)
+        if (cameraTransform == null) return;
+
+        // Set waist position below camera
+        Vector3 headPos = cameraTransform.position;
+        transform.position = new Vector3(headPos.x, headPos.y - 0.6f, headPos.z);
+
+        // Get flat direction from camera
+        Vector3 flatForward = Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up).normalized;
+
+        // Check angle from current belt rotation
+        float angle = Quaternion.Angle(transform.rotation, Quaternion.LookRotation(flatForward, Vector3.up));
+
+        if (angle > rotationThresholdAngle)
         {
-            Vector3 currentPosition = transform.position; // keep belt position fixed
-
-            // Only rotate Y to match the camera's Y-axis rotation
-            Quaternion cameraRotation = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f);
-            transform.rotation = cameraRotation;
-
-            transform.position = currentPosition; // reapply fixed position to ensure no drift
+            targetRotation = Quaternion.LookRotation(flatForward, Vector3.up);
         }
+
+        // Always ease toward targetRotation
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSmoothSpeed);
     }
+    
 
     private void PositionSlotsAlongArc()
     {
