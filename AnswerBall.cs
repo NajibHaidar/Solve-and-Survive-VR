@@ -24,14 +24,18 @@ public class AnswerBall : MonoBehaviour
         interactable.selectExited.AddListener(OnReleased);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        // Check if we hit the correct object
-        EquationMonster monster = collision.gameObject.GetComponent<EquationMonster>();
-        if (monster != null)
+        Debug.Log("Trigger Entered with: " + other.name);
+        // Check if the other collider is an EquationMonster
+        if (other.CompareTag("EquationMonster"))
         {
-            monster.CheckAnswer(ballValue);
-            Destroy(gameObject); // Remove the ball after it hits
+            EquationMonster monster = other.GetComponent<EquationMonster>();
+            if (monster != null)
+            {
+                monster.CheckAnswer(ballValue);
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -64,6 +68,6 @@ public class AnswerBall : MonoBehaviour
         if (tmp != null)
             tmp.text = value.ToString();
     }
-    
+
 }
 

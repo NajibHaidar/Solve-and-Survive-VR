@@ -88,4 +88,20 @@ public class EquationMonster : MonoBehaviour
             yield return new WaitForSeconds(flashDuration);
         }
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Monster Trigger Entered: " + other.name);
+        if (other.CompareTag("Player"))
+        {
+            PlayerHealthManager playerHealth = other.GetComponent<PlayerHealthManager>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage();
+            }
+
+            Destroy(transform.root.gameObject); // Destroy monster on hit
+        }
+    }
+
 }
