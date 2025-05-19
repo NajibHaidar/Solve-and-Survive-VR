@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EquationMonsterSpawner : MonoBehaviour
@@ -7,11 +8,19 @@ public class EquationMonsterSpawner : MonoBehaviour
     public GameObject monsterPrefab;
     public float spawnInterval = 5f;
 
-    [Header("Spawn Points")]
-    public Transform[] spawnPoints;
+    [Header("Spawn Manager")]
+    public Transform spawnManager;  // Assign your SpawnManager parent in the Inspector
+
+    private List<Transform> spawnPoints = new List<Transform>();
 
     void Start()
     {
+        // Get all child spawn points of the SpawnManager
+        foreach (Transform child in spawnManager)
+        {
+            spawnPoints.Add(child);
+        }
+
         StartCoroutine(SpawnMonstersLoop());
     }
 
@@ -26,9 +35,9 @@ public class EquationMonsterSpawner : MonoBehaviour
 
     void SpawnMonsterAtRandomPoint()
     {
-        if (spawnPoints.Length == 0 || monsterPrefab == null) return;
+        if (spawnPoints.Count == 0 || monsterPrefab == null) return;
 
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
         Instantiate(monsterPrefab, spawnPoint.position, spawnPoint.rotation);
     }
 }
