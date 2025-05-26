@@ -64,7 +64,7 @@ public class AnswerBallBeltManager : MonoBehaviour
         // Always ease toward targetRotation
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSmoothSpeed);
     }
-    
+
 
     private void PositionSlotsAlongArc()
     {
@@ -87,14 +87,19 @@ public class AnswerBallBeltManager : MonoBehaviour
     {
         Transform slot = ballSlots[index];
 
-        GameObject ball = Instantiate(numberBallPrefab, slot.position, slot.rotation, slot);
+        // Direction from slot to belt center
+        Vector3 toCenter = slot.localPosition.normalized;
+
+        // Create rotation that faces the center of the belt
+        Quaternion lookRotation = Quaternion.LookRotation(toCenter, Vector3.up);
+
+        GameObject ball = Instantiate(numberBallPrefab, slot.position, lookRotation, slot);
+
         AnswerBall answerBallScript = ball.GetComponent<AnswerBall>();
         int value = index + 1;
         answerBallScript.SetBallValue(value);
         answerBallScript.slotIndex = index; // assign which slot it's from
         answerBallScript.beltManager = this; // pass ref back
-
-        // Optional: update TMP manually, though SetBallValue handles it
     }
 
     public void RespawnBall(int slotIndex, float delay = 1.0f)

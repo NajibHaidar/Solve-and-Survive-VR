@@ -42,22 +42,46 @@ public class EquationMonster : MonoBehaviour
         int b = Random.Range(1, 10);
         int c = a + b;
 
-        int blankIndex = Random.Range(0, 2);
+        int blankIndex = Random.Range(0, 2); // 0 = left blank, 1 = right blank
         string equationStr = "";
+
+        // Choose operator (for now it's always addition)
+        string op = "+";
+
+        // Uncomment below to randomly pick an operator once ball smashing logic is implemented
+        /*
+        string[] ops = { "+", "-", "*", "/" };
+        op = ops[Random.Range(0, ops.Length)];
+
+        // Recalculate c based on operator
+        switch (op)
+        {
+            case "+": c = a + b; break;
+            case "-": c = a - b; break;
+            case "*": c = a * b; break;
+            case "/": 
+                // Ensure no division by zero and clean division
+                b = Random.Range(1, 10);
+                c = a;
+                a = b * Random.Range(1, 10); // force a divisible number
+                break;
+        }
+        */
 
         if (blankIndex == 0)
         {
             correctAnswer = a;
-            equationStr = "_ + " + b + " = " + c;
+            equationStr = "_ " + op + " " + b + " = " + c;
         }
         else
         {
             correctAnswer = b;
-            equationStr = a + " + _ = " + c;
+            equationStr = a + " " + op + " _ = " + c;
         }
 
         equationText.text = equationStr;
     }
+
 
     public void CheckAnswer(int answer)
     {

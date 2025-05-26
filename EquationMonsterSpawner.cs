@@ -6,38 +6,59 @@ public class EquationMonsterSpawner : MonoBehaviour
 {
     [Header("Monster Settings")]
     public GameObject monsterPrefab;
-    public float spawnInterval = 5f;
 
     [Header("Spawn Manager")]
     public Transform spawnManager;  // Assign your SpawnManager parent in the Inspector
 
     private List<Transform> spawnPoints = new List<Transform>();
 
-    void Start()
+    void Awake()
     {
-        // Get all child spawn points of the SpawnManager
         foreach (Transform child in spawnManager)
         {
             spawnPoints.Add(child);
         }
-
-        StartCoroutine(SpawnMonstersLoop());
     }
 
-    IEnumerator SpawnMonstersLoop()
+    public void SpawnWave(int waveNumber)
     {
-        while (true)
+        int baseEnemies = 10;
+        float growthFactor = 7f;  // faster/slower growth
+        int maxEnemies = 60;
+
+        int monstersToSpawn = Mathf.Min(
+            baseEnemies + Mathf.FloorToInt(Mathf.Log(waveNumber + 1) * growthFactor),
+            maxEnemies
+        );
+
+        StartCoroutine(SpawnWaveCoroutine(monstersToSpawn, waveNumber));
+    }
+
+    private IEnumerator SpawnWaveCoroutine(int count, int waveNumber)
+    {
+        float delayBetweenSpawns = Mathf.Max(0.2f, 2.0f - (waveNumber * 0.1f)); // faster spawns in later waves
+
+        for (int i = 0; i < count; i++)
         {
-            SpawnMonsterAtRandomPoint();
-            yield return new WaitForSeconds(spawnInterval);
+            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
+            GameObject monster = Instantiate(monsterPrefab, spawnPoint.position, spawnPoint.rotation);
+
+            if (waveNumber % 2 == 0) // Every second wave, increase monster speed
+            {
+                var agent = monster.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                if (agent != null)
+                {
+                    agent.speed += waveNumber * 0.1f;
+                }
+            }
+
+            yield return new WaitForSeconds(delayBetweenSpawns);
         }
     }
 
-    void SpawnMonsterAtRandomPoint()
+    public bool AreMonstersAlive()
     {
-        if (spawnPoints.Count == 0 || monsterPrefab == null) return;
-
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
-        Instantiate(monsterPrefab, spawnPoint.position, spawnPoint.rotation);
+        return GameObject.FindGameObjectsWithTag("EquationMonster").Length > 0;
     }
 }
+
