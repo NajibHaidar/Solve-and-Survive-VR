@@ -5,7 +5,7 @@ using System.Collections;
 
 public class WaveManager : MonoBehaviour
 {
-    public EquationMonsterSpawner spawner;        // Reference to your spawner script
+    public EquationMonsterSpawner spawner;        // Reference to spawner script
     public TextMeshProUGUI waveText;              // Optional: UI to show wave number
     public float timeBetweenWaves = 5f;
 

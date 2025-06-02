@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EquationMonsterSpawner : MonoBehaviour
 {
-    [Header("Monster Settings")]
-    public GameObject monsterPrefab;
+    [Header("Monster Types")]
+    public GameObject[] monsterPrefabs;
 
     [Header("Spawn Manager")]
     public Transform spawnManager;  // Assign your SpawnManager parent in the Inspector
@@ -36,14 +36,21 @@ public class EquationMonsterSpawner : MonoBehaviour
 
     private IEnumerator SpawnWaveCoroutine(int count, int waveNumber)
     {
+        if (monsterPrefabs.Length == 0)
+        {
+            Debug.LogError("No monster prefabs assigned to EquationMonsterSpawner!");
+            yield break;
+        }
+
         float delayBetweenSpawns = Mathf.Max(0.2f, 2.0f - (waveNumber * 0.1f)); // faster spawns in later waves
 
         for (int i = 0; i < count; i++)
         {
             Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
-            GameObject monster = Instantiate(monsterPrefab, spawnPoint.position, spawnPoint.rotation);
+            GameObject randomPrefab = monsterPrefabs[Random.Range(0, monsterPrefabs.Length)];
+            GameObject monster = Instantiate(randomPrefab, spawnPoint.position, spawnPoint.rotation);
 
-            if (waveNumber % 2 == 0) // Every second wave, increase monster speed
+            if (waveNumber % 2 == 0)
             {
                 var agent = monster.GetComponent<UnityEngine.AI.NavMeshAgent>();
                 if (agent != null)
@@ -55,6 +62,7 @@ public class EquationMonsterSpawner : MonoBehaviour
             yield return new WaitForSeconds(delayBetweenSpawns);
         }
     }
+
 
     public bool AreMonstersAlive()
     {
