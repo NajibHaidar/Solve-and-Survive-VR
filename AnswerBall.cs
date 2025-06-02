@@ -11,6 +11,8 @@ public class AnswerBall : MonoBehaviour
 
     private XRGrabInteractable interactable;
     private Rigidbody rb;
+    private bool hasMerged = false;
+
 
     void Awake()
     {
@@ -37,6 +39,23 @@ public class AnswerBall : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+
+        if (other.CompareTag("AnswerBall"))
+        {
+            AnswerBall otherBall = other.GetComponent<AnswerBall>();
+            if (otherBall != null && !hasMerged && !otherBall.hasMerged)
+            {
+                hasMerged = true;
+                otherBall.hasMerged = true;
+
+                int newValue = ballValue + otherBall.ballValue;
+                otherBall.SetBallValue(newValue);
+
+                Destroy(gameObject);
+            }
+        }
+
+
     }
 
     private void OnGrabbed(SelectEnterEventArgs args)
