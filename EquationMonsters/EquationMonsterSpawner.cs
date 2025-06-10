@@ -8,7 +8,7 @@ public class EquationMonsterSpawner : MonoBehaviour
     public GameObject[] monsterPrefabs;
 
     [Header("Spawn Manager")]
-    public Transform spawnManager;  // Assign your SpawnManager parent in the Inspector
+    public Transform spawnManager;
 
     private List<Transform> spawnPoints = new List<Transform>();
 

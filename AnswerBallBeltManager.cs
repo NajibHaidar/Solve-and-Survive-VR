@@ -87,20 +87,28 @@ public class AnswerBallBeltManager : MonoBehaviour
     {
         Transform slot = ballSlots[index];
 
-        // Direction from slot to belt center
-        Vector3 toCenter = slot.localPosition.normalized;
+        if (slot.childCount > 0)
+        {
+            return; // Slot is occupied, do not spawn
+        }
 
-        // Create rotation that faces the center of the belt
-        Quaternion lookRotation = Quaternion.LookRotation(toCenter, Vector3.up);
+        // World-space direction from slot to belt center
+        Vector3 worldToCenter = (slot.position - transform.position).normalized;
 
-        GameObject ball = Instantiate(numberBallPrefab, slot.position, lookRotation, slot);
+        // Calculate world-space rotation facing the center of the belt
+        Quaternion worldLookRotation = Quaternion.LookRotation(worldToCenter, Vector3.up);
+
+        // Instantiate using world rotation and manually set parent after
+        GameObject ball = Instantiate(numberBallPrefab, slot.position, worldLookRotation);
+        ball.transform.SetParent(slot, true); // true = keep world position/rotation
 
         AnswerBall answerBallScript = ball.GetComponent<AnswerBall>();
         int value = index + 1;
         answerBallScript.SetBallValue(value);
-        answerBallScript.slotIndex = index; // assign which slot it's from
-        answerBallScript.beltManager = this; // pass ref back
+        answerBallScript.slotIndex = index;
+        answerBallScript.beltManager = this;
     }
+
 
     public void RespawnBall(int slotIndex, float delay = 1.0f)
     {
