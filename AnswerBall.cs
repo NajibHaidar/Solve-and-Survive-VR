@@ -40,8 +40,8 @@ public class AnswerBall : MonoBehaviour
         {
             AnswerBall otherBall = other.GetComponent<AnswerBall>();
 
-            // Only merge if the other ball is not currently being grabbed
-            if (otherBall != null && !otherBall.hasMerged && otherBall != this)
+            // Only merge if the other ball has been grabbed
+            if (otherBall != null && !otherBall.hasMerged && otherBall.hasBeenGrabbed && otherBall != this)
             {
                 // Merge the other ball into THIS one
                 hasMerged = true;

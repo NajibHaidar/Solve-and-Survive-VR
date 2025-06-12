@@ -49,6 +49,8 @@ public class EquationMonsterSpawner : MonoBehaviour
             Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
             GameObject randomPrefab = monsterPrefabs[Random.Range(0, monsterPrefabs.Length)];
             GameObject monster = Instantiate(randomPrefab, spawnPoint.position, spawnPoint.rotation);
+            monster.GetComponent<EquationMonster>()?.Initialize(waveNumber);
+
 
             if (waveNumber % 2 == 0)
             {

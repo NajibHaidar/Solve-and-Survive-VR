@@ -21,17 +21,17 @@ public class GameStatsUI : MonoBehaviour
     void UpdateUI()
     {
         var stats = GameStatsManager.Instance;
-        defeatedText.text = $"Equation Monsters Defeated: {stats.MonstersDefeated}";
-        int score = Mathf.RoundToInt(stats.TimeAlive) + (10 * stats.MonstersDefeated);
-        scoreText.text = $"Total Score: {score}";
+        defeatedText.text = $"EQUATIONS SOLVED: {stats.MonstersDefeated}";
+        scoreText.text = $"SCORE: {stats.Score}";
+
 
         if (waveManager != null)
-            waveText.text = $"Wave: {waveManager.CurrentWave}";
+            waveText.text = $"WAVE: {waveManager.CurrentWave}";
 
         if (spawner != null)
         {
             int aliveCount = GameObject.FindGameObjectsWithTag("EquationMonster").Length;
-            aliveText.text = $"Monsters Alive: {aliveCount}";
+            aliveText.text = $"EQUATIONS ALIVE: {aliveCount}";
         }
     }
 }

@@ -36,14 +36,19 @@ public abstract class EquationMonster : MonoBehaviour
                 originalColors[r] = r.material.color;
             }
         }
-        // Let the subclass handle equation logic
-        GenerateEquation(out string equationStr, out correctAnswer);
-        equationText.text = equationStr;
+    }
+
+    public void Initialize(int wave)
+    {
+        GenerateEquation(out string equationStr, out correctAnswer, wave);
+        if (equationText != null)
+            equationText.text = equationStr;
     }
 
 
     // ABSTRACT METHOD FOR SUBCLASSES TO IMPLEMENT
-    protected abstract void GenerateEquation(out string equationStr, out int answer);
+    protected abstract void GenerateEquation(out string equationStr, out int answer, int wave);
+
 
     public virtual void CheckAnswer(int answer)
     {

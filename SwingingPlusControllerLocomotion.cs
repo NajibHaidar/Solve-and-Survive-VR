@@ -12,11 +12,16 @@ public class SwingingPlusControllerLocomotion : MonoBehaviour
     [SerializeField] private GameObject rightHand;
 
     [Header("Movement Settings")]
-    [SerializeField] private float speed = 6.0f;
+    [SerializeField] private float minSpeed = 6f;
+    [SerializeField] private float maxSpeed = 10f;
+    [SerializeField] private float maxExpectedYVelocity = 3f; // tweak based on testing
     [SerializeField] private float velocityThreshold = 0.5f;
     [SerializeField] private float individualYThreshold = 0.2f;
     [SerializeField] private bool applyGravity = false;
+    [SerializeField] private float speedSmoothing = 5f; // Higher = snappier, lower = smoother
 
+
+    private float currentSpeed = 0f;
     private Vector3 previousPosLeft;
     private Vector3 previousPosRight;
     private readonly Vector3 gravity = new Vector3(0, -9.8f, 0);
@@ -44,7 +49,23 @@ public class SwingingPlusControllerLocomotion : MonoBehaviour
             if (reverse)
                 planarDir = -planarDir;
 
-            characterController.Move(planarDir * speed * Time.deltaTime);
+            // Normalize total swing effort (clamped between 0 and 1)
+            float normalizedEffort = Mathf.Clamp01(totalYVelocity / maxExpectedYVelocity);
+
+            // Ease-in curve to make reaching max speed hard
+            float easedEffort = Mathf.Pow(normalizedEffort, 2f);
+
+            // Calculate actual dynamic speed
+            float dynamicSpeed = minSpeed + (maxSpeed - minSpeed) * easedEffort;
+
+            // Move character
+            // Smooth the speed transition
+            currentSpeed = Mathf.Lerp(currentSpeed, dynamicSpeed, Time.deltaTime * speedSmoothing);
+
+            // Move character
+            characterController.Move(planarDir * currentSpeed * Time.deltaTime);
+
+
 
             Debug.DrawRay(transform.position, planarDir, Color.green);
         }
